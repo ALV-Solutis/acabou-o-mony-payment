@@ -24,8 +24,8 @@ public class PaymentController {
         return ResponseEntity.ok().body(paymentService.getPaymentById(id));
     }
 
-//    @PostMapping
-//    public ResponseEntity<?> processPayment(@RequestBody PaymentRequestDto payment) {
-//        return ResponseEntity.status(HttpStatus.CREATED).body(/*processPayment*/);
-//    }
+    @PostMapping
+    public ResponseEntity<?> processPayment(@RequestBody PaymentRequestDto payment) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(paymentService.processPayment(payment));
+    }
 }

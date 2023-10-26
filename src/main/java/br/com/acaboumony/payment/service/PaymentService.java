@@ -24,7 +24,7 @@ public class PaymentService {
         this.paymentProducer = paymentProducer;
     }
 
-    public void processPayment(PaymentRequestDto paymentRequestDto) {
+    public PaymentResponseDto processPayment(PaymentRequestDto paymentRequestDto) {
         PaymentModel paymentModel = new PaymentModel();
         BeanUtils.copyProperties(paymentRequestDto, paymentModel);
         try {
@@ -37,6 +37,7 @@ public class PaymentService {
         finally {
             paymentProducer.publishMessageEmail(paymentModel);
         }
+        return getPaymentById(paymentModel.getPaymentId());
     }
 
     public PaymentResponseDto getPaymentById(UUID paymentId) {
