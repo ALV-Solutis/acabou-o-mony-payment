@@ -19,7 +19,8 @@ public class PaymentProducer {
     private String routingKey;
 
     public void publishMessageEmail(PaymentModel paymentModel) {
-        EmailDto emailDto = new EmailDto(paymentModel.getPaymentId(), paymentModel.getUserId(), paymentModel.getNameUser(),
+        EmailDto emailDto = new EmailDto(paymentModel.getPaymentId(), paymentModel.getOrderNumber(),
+                paymentModel.getUserId(), paymentModel.getNameUser(),
                 paymentModel.getEmail(), paymentModel.getValue(), paymentModel.getPaymentStatus().toString());
 
         rabbitTemplate.convertAndSend("", routingKey, emailDto);

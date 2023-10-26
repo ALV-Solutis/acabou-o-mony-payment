@@ -8,6 +8,7 @@ create table payments(
     due_date VARCHAR,
     code VARCHAR,
     payment_status VARCHAR,
+    payment_date timestamp,
     user_id uuid,
     name_user VARCHAR,
     email VARCHAR

@@ -6,6 +6,8 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -33,6 +35,8 @@ public class PaymentModel {
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
+
+    private LocalDateTime paymentDate;
 
     private UUID userId;
 

@@ -8,8 +8,11 @@ import br.com.acaboumony.payment.model.PaymentModel;
 import br.com.acaboumony.payment.producer.PaymentProducer;
 import br.com.acaboumony.payment.repository.PaymentRepository;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -17,26 +20,25 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final PaymentProducer paymentProducer;
-    private GenericMapper<PaymentResponseDto, PaymentModel> paymentReqMapper;
+    private final GenericMapper<PaymentResponseDto, PaymentModel> paymentReqMapper;
 
-    public PaymentService(PaymentRepository paymentRepository, PaymentProducer paymentProducer) {
+    public PaymentService(PaymentRepository paymentRepository, PaymentProducer paymentProducer, GenericMapper<PaymentResponseDto, PaymentModel> paymentReqMapper) {
         this.paymentRepository = paymentRepository;
         this.paymentProducer = paymentProducer;
+        this.paymentReqMapper = paymentReqMapper;
     }
 
     public PaymentResponseDto processPayment(PaymentRequestDto paymentRequestDto) {
         PaymentModel paymentModel = new PaymentModel();
         BeanUtils.copyProperties(paymentRequestDto, paymentModel);
+        paymentModel.setPaymentDate(LocalDateTime.now());
         try {
             paymentModel.setPaymentStatus(PaymentStatus.CONFIRMED);
-            paymentRepository.save(paymentModel);
         } catch (Exception e) {
             paymentModel.setPaymentStatus(PaymentStatus.CANCELED);
-            paymentRepository.save(paymentModel);
         }
-        finally {
-            paymentProducer.publishMessageEmail(paymentModel);
-        }
+        paymentRepository.save(paymentModel);
+        paymentProducer.publishMessageEmail(paymentModel);
         return getPaymentById(paymentModel.getPaymentId());
     }
 
@@ -47,7 +49,7 @@ public class PaymentService {
         return payment;
     }
 
-    public String formatNumberCard(String numberCard) {
+    private String formatNumberCard(String numberCard) {
         return numberCard.replace(numberCard.substring(4, 12), "********");
     }
 }
