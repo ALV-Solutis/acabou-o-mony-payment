@@ -1,0 +1,14 @@
+server.port=0
+
+spring.datasource.url=jdbc:postgresql://localhost:5432/acabouomony-payment
+spring.datasource.username=postgres
+spring.datasource.password=//senha do banco
+spring.jpa.hibernate.ddl-auto=update
+
+spring.rabbitmq.addresses=//endereço do rabbitMQ
+
+broker.queue.email.name.confirmation=default.confirmation
+
+spring.application.name=acaboumony-payment
+eureka.client.serviceUrl.defaultZone=http://localhost:8084/eureka
+eureka.instance.instance-id=${spring.application.name}:${random.int}
