@@ -9,6 +9,8 @@ import br.com.acaboumony.payment.producer.PaymentProducer;
 import br.com.acaboumony.payment.repository.PaymentRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -20,12 +22,12 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final PaymentProducer paymentProducer;
-    private final GenericMapper<PaymentResponseDto, PaymentModel> paymentReqMapper;
+    private final GenericMapper<PaymentResponseDto, PaymentModel> paymentResMapper;
 
-    public PaymentService(PaymentRepository paymentRepository, PaymentProducer paymentProducer, GenericMapper<PaymentResponseDto, PaymentModel> paymentReqMapper) {
+    public PaymentService(PaymentRepository paymentRepository, PaymentProducer paymentProducer, GenericMapper<PaymentResponseDto, PaymentModel> paymentResMapper) {
         this.paymentRepository = paymentRepository;
         this.paymentProducer = paymentProducer;
-        this.paymentReqMapper = paymentReqMapper;
+        this.paymentResMapper = paymentResMapper;
     }
 
     public PaymentResponseDto processPayment(PaymentRequestDto paymentRequestDto) {
@@ -44,9 +46,16 @@ public class PaymentService {
 
     public PaymentResponseDto getPaymentById(UUID paymentId) {
         PaymentModel paymentModel = paymentRepository.findById(paymentId).orElseThrow();
-        PaymentResponseDto payment = paymentReqMapper.mapModelToDto(paymentModel, PaymentResponseDto.class);
+        PaymentResponseDto payment = paymentResMapper.mapModelToDto(paymentModel, PaymentResponseDto.class);
         payment.setNumber(formatNumberCard(payment.getNumber()));
         return payment;
+    }
+
+    public Page<PaymentResponseDto> getPaymentsByCpf(Long page, Long size, String cpf) {
+        Page<PaymentModel> payments = paymentRepository.findAllByCpf(PageRequest.of(page.intValue(), size.intValue()), cpf);
+        payments.forEach(payment -> payment.setNumber(formatNumberCard(payment.getNumber())));
+        return payments.map(
+                payment -> paymentResMapper.mapModelToDto(payment, PaymentResponseDto.class));
     }
 
     private String formatNumberCard(String numberCard) {

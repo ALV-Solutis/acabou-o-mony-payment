@@ -8,6 +8,7 @@ import java.util.UUID;
 
 @Data
 public class PaymentResponseDto {
+    private UUID paymentId;
     private String orderNumber;
     private BigDecimal value;
     private String cpf;
