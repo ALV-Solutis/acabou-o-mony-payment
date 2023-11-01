@@ -12,7 +12,7 @@ public record PaymentRequestDto(@NotBlank String orderNumber,
                                 @NotBlank @Size(min = 13, max = 19) String number,
                                 @NotBlank @Size(max = 5, min = 5) String dueDate,
                                 @NotBlank @Size(max = 3, min = 3) String code,
-                                @NotBlank UUID userId,
+                                @NotNull UUID userId,
                                 @NotBlank String nameUser,
                                 @NotBlank @Email String email) {
 }

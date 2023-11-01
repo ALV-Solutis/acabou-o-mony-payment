@@ -16,7 +16,6 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-
     public PaymentController(PaymentService paymentService) {
         this.paymentService = paymentService;
     }

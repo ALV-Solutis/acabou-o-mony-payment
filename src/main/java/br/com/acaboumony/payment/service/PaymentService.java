@@ -7,6 +7,7 @@ import br.com.acaboumony.payment.mapper.GenericMapper;
 import br.com.acaboumony.payment.model.PaymentModel;
 import br.com.acaboumony.payment.producer.PaymentProducer;
 import br.com.acaboumony.payment.repository.PaymentRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
