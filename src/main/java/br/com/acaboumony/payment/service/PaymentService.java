@@ -3,6 +3,7 @@ package br.com.acaboumony.payment.service;
 import br.com.acaboumony.payment.dto.PaymentRequestDto;
 import br.com.acaboumony.payment.dto.PaymentResponseDto;
 import br.com.acaboumony.payment.enums.PaymentStatus;
+import br.com.acaboumony.payment.exception.PaymentProcessingException;
 import br.com.acaboumony.payment.mapper.GenericMapper;
 import br.com.acaboumony.payment.model.PaymentModel;
 import br.com.acaboumony.payment.producer.PaymentProducer;
@@ -33,15 +34,24 @@ public class PaymentService {
 
     public PaymentResponseDto processPayment(PaymentRequestDto paymentRequestDto) {
         PaymentModel paymentModel = new PaymentModel();
-        BeanUtils.copyProperties(paymentRequestDto, paymentModel);
-        paymentModel.setPaymentDate(LocalDateTime.now());
+
         try {
+            BeanUtils.copyProperties(paymentRequestDto, paymentModel);
+            paymentModel.setPaymentDate(LocalDateTime.now());
             paymentModel.setPaymentStatus(PaymentStatus.CONFIRMED);
+
+            paymentRepository.save(paymentModel);
+            paymentProducer.publishMessageEmail(paymentModel);
+
         } catch (Exception e) {
+
             paymentModel.setPaymentStatus(PaymentStatus.CANCELED);
+            throw new PaymentProcessingException("Pagamento Cancelado", e);
+
+        } finally {
+            paymentRepository.save(paymentModel);
         }
-        paymentRepository.save(paymentModel);
-        paymentProducer.publishMessageEmail(paymentModel);
+
         return getPaymentById(paymentModel.getPaymentId());
     }
 
