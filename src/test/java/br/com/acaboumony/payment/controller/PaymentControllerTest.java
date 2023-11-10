@@ -16,6 +16,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -34,6 +36,8 @@ class PaymentControllerTest {
     private JacksonTester<PaymentRequestDto> paymentRequestDtoJson;
     @Autowired
     private JacksonTester<PaymentResponseDto> paymentResponseDtoJson;
+    @Autowired
+    private JacksonTester<List<PaymentResponseDto>> paymentsListResponseDtoJson;
     @Autowired
     private PaymentService paymentService;
 
@@ -80,7 +84,7 @@ class PaymentControllerTest {
     @Test
     @WithMockUser
     @DisplayName("Devolver código HTTP 500 quando não for informado cpf no parametro.")
-    void noCpfPaymentsByCpf() throws Exception {
+    void noCpfParamPaymentsByCpf() throws Exception {
 
         var response = mockMvc.perform(get("/payments"))
                 .andReturn().getResponse();
@@ -103,6 +107,22 @@ class PaymentControllerTest {
 
     @Test
     @WithMockUser
+    @DisplayName("Devolver códito HTTP 200 e o body quando existir")
+    void cpfFoundPaymentsByCpf() throws Exception {
+        var response = mockMvc.perform(get("/payments")
+                        .param("cpf", "54850375841"))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+
+        var jsonEsperado = paymentsListResponseDtoJson.write(paymentService.getPaymentsByCpf("54850375841")
+        ).getJson();
+
+        assertThat(response.getContentAsString()).isEqualTo(jsonEsperado);
+    }
+
+    @Test
+    @WithMockUser
     @DisplayName("Devolver código HTTP 400 quando o corpo da requisição estiver vazio")
     void noBodyProcessPayment() throws Exception {
 
@@ -114,4 +134,20 @@ class PaymentControllerTest {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @Test
+    @WithMockUser
+    @DisplayName("Devolver código HTTP 200 quando o pagamento for processado")
+    void processPaymentSuccess() throws Exception {
+        PaymentRequestDto paymentRequestDto = new PaymentRequestDto("378532", new BigDecimal("853.5"), "47385794832",
+                "Leonardo J Vend", "4385378534389364", "04/32",
+                "543", UUID.fromString("959bbc53-a5a9-49d5-b694-20fce1b38c40"),
+                "Leonardo Macedo", "emailteste@gmail.com");
+
+        var response = mockMvc.perform(post("/payments")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(paymentRequestDtoJson.write(paymentRequestDto).getJson()))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+    }
 }
