@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
@@ -62,11 +64,15 @@ public class PaymentService {
         return payment;
     }
 
-    public Page<PaymentResponseDto> getPaymentsByCpf(Long page, Long size, String cpf) {
-        Page<PaymentModel> payments = paymentRepository.findAllByCpf(PageRequest.of(page.intValue(), size.intValue()), cpf);
+    public List<PaymentResponseDto> getPaymentsByCpf(String cpf) {
+        List<PaymentModel> payments = paymentRepository.findAllByCpf(cpf)
+                .orElseThrow(NoSuchElementException::new);
+        if (payments.isEmpty()) {
+            throw new NoSuchElementException();
+        }
         payments.forEach(payment -> payment.setNumber(formatNumberCard(payment.getNumber())));
-        return payments.map(
-                payment -> paymentResMapper.mapModelToDto(payment, PaymentResponseDto.class));
+        return payments.stream().map(
+                payment -> paymentResMapper.mapModelToDto(payment, PaymentResponseDto.class)).toList();
     }
 
     private String formatNumberCard(String numberCard) {

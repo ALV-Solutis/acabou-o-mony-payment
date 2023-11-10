@@ -56,7 +56,7 @@ public class Error implements Serializable {
     public Map<String, Object> handleValidationNoSuchElementException(NoSuchElementException ex) {
 
         Map<String, Object> errors = new HashMap<>();
-        errors.put("Erro", ex.getMessage()+" Não foi encontrado");
+        errors.put("Erro", "Elemento não foi encontrado");
         errors.put("Codigo", HttpStatus.NOT_FOUND.value());
         return errors;
     }

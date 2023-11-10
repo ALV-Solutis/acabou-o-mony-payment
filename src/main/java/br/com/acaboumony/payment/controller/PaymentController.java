@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -25,9 +26,9 @@ public class PaymentController {
         return ResponseEntity.ok().body(paymentService.getPaymentById(id));
     }
 
-    @GetMapping()
-    public ResponseEntity<Page<?>> paymentsByCpf(@RequestParam String cpf, @RequestParam long page, @RequestParam long size) {
-        return ResponseEntity.ok().body(paymentService.getPaymentsByCpf(page, size, cpf));
+    @GetMapping
+    public ResponseEntity<List<?>> paymentsByCpf(@RequestParam String cpf) {
+        return ResponseEntity.ok().body(paymentService.getPaymentsByCpf(cpf));
     }
 
     @PostMapping
