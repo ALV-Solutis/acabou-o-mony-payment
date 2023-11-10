@@ -2,6 +2,7 @@ package br.com.acaboumony.payment.controller;
 
 import br.com.acaboumony.payment.dto.PaymentRequestDto;
 import br.com.acaboumony.payment.dto.PaymentResponseDto;
+import br.com.acaboumony.payment.service.PaymentService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Random;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -32,6 +34,8 @@ class PaymentControllerTest {
     private JacksonTester<PaymentRequestDto> paymentRequestDtoJson;
     @Autowired
     private JacksonTester<PaymentResponseDto> paymentResponseDtoJson;
+    @Autowired
+    private PaymentService paymentService;
 
     @Test
     @WithMockUser
@@ -58,9 +62,19 @@ class PaymentControllerTest {
 
     @Test
     @WithMockUser
-    @DisplayName("Devolver código HTTP 200 e um body quando existir")
-    void detailsPayment() {
+    @DisplayName("Devolver código HTTP 200 e um body quando existir.")
+    void detailsPayment() throws Exception {
 
+        var response = mockMvc.perform(get("/payments/id")
+                .header("id", "959bbc53-a5a9-49d5-b694-20fce1b38c40"))
+                .andReturn().getResponse();
+
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+
+        var jsonEsperado = paymentResponseDtoJson.write(paymentService.getPaymentById(UUID.fromString("959bbc53-a5a9-49d5-b694-20fce1b38c40"))
+        ).getJson();
+
+        assertThat(response.getContentAsString()).isEqualTo(jsonEsperado);
     }
 
     @Test
