@@ -2,11 +2,9 @@ package br.com.acaboumony.payment.model;
 
 import br.com.acaboumony.payment.enums.PaymentStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
 

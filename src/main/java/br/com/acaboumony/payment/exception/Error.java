@@ -1,6 +1,5 @@
 package br.com.acaboumony.payment.exception;
 
-import jakarta.persistence.EntityExistsException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -53,7 +52,7 @@ public class Error implements Serializable {
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NoSuchElementException.class)
-    public Map<String, Object> handleValidationNoSuchElementException(NoSuchElementException ex) {
+    public Map<String, Object> handleValidationNoSuchElementException() {
 
         Map<String, Object> errors = new HashMap<>();
         errors.put("Erro", "Elemento não foi encontrado");

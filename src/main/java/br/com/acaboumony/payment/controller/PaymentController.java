@@ -4,7 +4,6 @@ import br.com.acaboumony.payment.dto.PaymentRequestDto;
 import br.com.acaboumony.payment.service.PaymentService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
