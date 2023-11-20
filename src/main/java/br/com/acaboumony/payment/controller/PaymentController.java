@@ -57,7 +57,7 @@ public class PaymentController {
             @ApiResponse(responseCode = "500", content = { @Content(schema = @Schema) }, description = "Internal Server Error")
     })
     @GetMapping
-    public ResponseEntity<Page<?>> paymentsByCpf(@RequestParam String cpf, Pageable pageable) {
+    public ResponseEntity<Page<?>> paymentsByCpf(@RequestHeader String cpf, Pageable pageable) {
         return ResponseEntity.ok().body(paymentService.getPaymentsByCpf(cpf, pageable));
     }
 
