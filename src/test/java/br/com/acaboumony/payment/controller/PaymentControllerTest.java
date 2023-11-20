@@ -6,18 +6,19 @@ import br.com.acaboumony.payment.service.PaymentService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.json.JacksonTester;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -37,7 +38,7 @@ class PaymentControllerTest {
     @Autowired
     private JacksonTester<PaymentResponseDto> paymentResponseDtoJson;
     @Autowired
-    private JacksonTester<List<PaymentResponseDto>> paymentsListResponseDtoJson;
+    private JacksonTester<Page<PaymentResponseDto>> paymentsListResponseDtoJson;
     @Autowired
     private PaymentService paymentService;
 
@@ -110,12 +111,15 @@ class PaymentControllerTest {
     @DisplayName("Devolver códito HTTP 200 e o body quando existir")
     void cpfFoundPaymentsByCpf() throws Exception {
         var response = mockMvc.perform(get("/payments")
-                        .param("cpf", "54850375841"))
+                        .param("cpf", "54850375841")
+                        .param("size", "2")
+                        .param("page", "0"))
                 .andReturn().getResponse();
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 
-        var jsonEsperado = paymentsListResponseDtoJson.write(paymentService.getPaymentsByCpf("54850375841")
+        Pageable pageable = PageRequest.of(0, 2);
+        var jsonEsperado = paymentsListResponseDtoJson.write(paymentService.getPaymentsByCpf("54850375841", pageable)
         ).getJson();
 
         assertThat(response.getContentAsString()).isEqualTo(jsonEsperado);

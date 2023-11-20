@@ -9,10 +9,11 @@ import br.com.acaboumony.payment.model.PaymentModel;
 import br.com.acaboumony.payment.producer.PaymentProducer;
 import br.com.acaboumony.payment.repository.PaymentRepository;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -58,15 +59,15 @@ public class PaymentService {
         return payment;
     }
 
-    public List<PaymentResponseDto> getPaymentsByCpf(String cpf) {
-        List<PaymentModel> payments = paymentRepository.findAllByCpf(cpf)
+    public Page<PaymentResponseDto> getPaymentsByCpf(String cpf, Pageable pageable) {
+        Page<PaymentModel> payments = paymentRepository.findAllByCpf(cpf, pageable)
                 .orElseThrow(NoSuchElementException::new);
         if (payments.isEmpty()) {
             throw new NoSuchElementException();
         }
         payments.forEach(payment -> payment.setNumber(formatNumberCard(payment.getNumber())));
-        return payments.stream().map(
-                payment -> paymentResMapper.mapModelToDto(payment, PaymentResponseDto.class)).toList();
+        return payments.map(
+                payment -> paymentResMapper.mapModelToDto(payment, PaymentResponseDto.class));
     }
 
     private String formatNumberCard(String numberCard) {

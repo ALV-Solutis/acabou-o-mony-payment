@@ -10,11 +10,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -56,8 +57,8 @@ public class PaymentController {
             @ApiResponse(responseCode = "500", content = { @Content(schema = @Schema) }, description = "Internal Server Error")
     })
     @GetMapping
-    public ResponseEntity<List<?>> paymentsByCpf(@RequestParam String cpf) {
-        return ResponseEntity.ok().body(paymentService.getPaymentsByCpf(cpf));
+    public ResponseEntity<Page<?>> paymentsByCpf(@RequestParam String cpf, Pageable pageable) {
+        return ResponseEntity.ok().body(paymentService.getPaymentsByCpf(cpf, pageable));
     }
 
     @Operation(
