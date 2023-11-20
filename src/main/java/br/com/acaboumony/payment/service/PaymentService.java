@@ -37,8 +37,6 @@ public class PaymentService {
             paymentModel.setPaymentDate(LocalDateTime.now());
             paymentModel.setPaymentStatus(PaymentStatus.CONFIRMED);
 
-            paymentRepository.save(paymentModel);
-            paymentProducer.publishMessageEmail(paymentModel);
 
         } catch (Exception e) {
 
@@ -47,6 +45,7 @@ public class PaymentService {
 
         } finally {
             paymentRepository.save(paymentModel);
+            paymentProducer.publishMessageEmail(paymentModel);
         }
 
         return getPaymentById(paymentModel.getPaymentId());
